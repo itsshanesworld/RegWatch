@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RegWatch — Early Access</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7EF;
+    --paper-card:#FFFFFF;
+    --ink:#17181F;
+    --ink-soft:#54566A;
+    --ink-faint:#8A8C9C;
+    --redline:#C41230;
+    --redline-dark:#8E0D22;
+    --legalpad:#F2DE6E;
+    --legalpad-ink:#5B4E12;
+    --stamp:#33573B;
+    --rule-blue:#B9C3E3;
+    --rule-blue-soft:#DCE1F0;
+    --max:1120px;
+    --radius:2px;
+  }
+  *,*::before,*::after{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Public Sans',-apple-system,sans-serif;
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  img,svg{display:block;max-width:100%;}
+  a{color:inherit;}
+  h1,h2,h3{
+    font-family:'Source Serif 4',Georgia,serif;
+    font-weight:600;
+    line-height:1.12;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0;}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 1.5rem;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--redline);
+    display:flex;
+    align-items:center;
+    gap:0.55rem;
+    margin-bottom:1rem;
+  }
+  .eyebrow::before{
+    content:"";
+    width:1.15rem;
+    height:1px;
+    background:var(--redline);
+    display:inline-block;
+  }
+  button{font-family:inherit;cursor:pointer;}
+  :focus-visible{outline:2px solid var(--redline);outline-offset:3px;}
+
+  /* ---------- NAV ---------- */
+  header.site-nav{
+    position:sticky;top:0;z-index:40;
+    background:rgba(250,247,239,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--rule-blue-soft);
+  }
+  .nav-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0.95rem 1.5rem;
+    max-width:var(--max);margin:0 auto;
+  }
+  .wordmark{
+    font-family:'Source Serif 4',serif;
+    font-weight:700;font-size:1.28rem;
+    display:flex;align-items:baseline;gap:0.15rem;
+    text-decoration:none;
+  }
+  .wordmark .strike{position:relative;color:var(--ink-faint);}
+  .wordmark .strike::after{
+    content:"";position:absolute;left:-2%;right:-2%;top:52%;height:2px;background:var(--redline);
+    transform:rotate(-2deg);
+  }
+  .nav-links{display:none;gap:1.9rem;font-size:0.92rem;color:var(--ink-soft);}
+  .nav-links a{text-decoration:none;}
+  .nav-links a:hover{color:var(--redline);}
+  .nav-cta{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.76rem;letter-spacing:0.03em;
+    background:var(--ink);color:var(--paper);
+    border:none;padding:0.65rem 1.05rem;border-radius:var(--radius);
+    text-decoration:none;white-space:nowrap;
+  }
+  .nav-cta:hover{background:var(--redline);}
+  @media(min-width:840px){.nav-links{display:flex;}}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:3.2rem 0 3.5rem;}
+  .hero-grid{display:grid;gap:2.6rem;align-items:center;}
+  @media(min-width:900px){.hero-grid{grid-template-columns:1.05fr 0.95fr;gap:3rem;}}
+  .hero h1{font-size:2.15rem;margin-bottom:1.15rem;}
+  @media(min-width:640px){.hero h1{font-size:2.75rem;}}
+  .hero h1 em{font-style:italic;color:var(--redline);}
+  .hero-sub{font-size:1.05rem;color:var(--ink-soft);max-width:44ch;margin-bottom:1.7rem;}
+
+  .signup-box{
+    background:var(--paper-card);
+    border:1px solid var(--rule-blue-soft);
+    border-left:3px solid var(--redline);
+    padding:1.4rem;border-radius:var(--radius);
+    max-width:480px;
+  }
+  .signup-row{display:flex;flex-direction:column;gap:0.7rem;}
+  .field label{
+    display:block;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;
+    letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:0.3rem;
+  }
+  .field input,.field select{
+    width:100%;padding:0.65rem 0.75rem;
+    border:1px solid var(--rule-blue);background:var(--paper);
+    font-family:'Public Sans',sans-serif;font-size:0.95rem;color:var(--ink);
+    border-radius:var(--radius);
+  }
+  .field input:focus,.field select:focus{border-color:var(--redline);}
+  .submit-btn{
+    background:var(--redline);color:#fff;border:none;
+    padding:0.8rem 1.2rem;font-weight:600;font-size:0.95rem;
+    border-radius:var(--radius);margin-top:0.35rem;
+    display:flex;align-items:center;justify-content:center;gap:0.5rem;
+  }
+  .submit-btn:hover{background:var(--redline-dark);}
+  .submit-btn:disabled{opacity:0.6;cursor:default;}
+  .fine-print{font-size:0.78rem;color:var(--ink-faint);margin-top:0.7rem;line-height:1.5;}
+  .form-status{font-size:0.85rem;margin-top:0.6rem;min-height:1.1em;}
+  .form-status.ok{color:var(--stamp);}
+  .form-status.err{color:var(--redline-dark);}
+  .spinner{
+    width:0.85rem;height:0.85rem;border-radius:50%;
+    border:2px solid rgba(255,255,255,0.5);border-top-color:#fff;
+    animation:spin 0.7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .pill-label{font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.04em;color:var(--ink-faint);margin-bottom:0.6rem;}
+  .pill-row{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.1rem;}
+  .pill-btn{
+    font-family:'Public Sans',sans-serif;font-size:0.82rem;
+    background:var(--paper);border:1px solid var(--rule-blue);color:var(--ink-soft);
+    padding:0.45rem 0.8rem;border-radius:999px;
+  }
+  .pill-btn:hover{border-color:var(--redline);color:var(--ink);}
+  .pill-btn.picked{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .signup-link{text-decoration:none;}
+  .email-capture-label{font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.04em;color:var(--ink-faint);margin-bottom:0.5rem;}
+  .email-copy-row{
+    display:flex;align-items:center;gap:0.6rem;
+    background:var(--paper);border:1px solid var(--rule-blue);border-radius:var(--radius);
+    padding:0.65rem 0.75rem;
+  }
+  .email-text{
+    font-family:'IBM Plex Mono',monospace;font-size:0.92rem;color:var(--ink);
+    flex:1;word-break:break-all;-webkit-user-select:all;user-select:all;
+  }
+  .copy-btn{
+    background:var(--redline);color:#fff;border:none;
+    padding:0.5rem 0.85rem;font-weight:600;font-size:0.82rem;
+    border-radius:var(--radius);white-space:nowrap;flex-shrink:0;
+    transition:background 0.15s ease;
+  }
+  .copy-btn:hover{background:var(--redline-dark);}
+  .copy-btn.copied{background:var(--stamp);}
+
+  /* redline document mockup */
+  .doc-mock{
+    background:var(--paper-card);border:1px solid var(--rule-blue-soft);
+    border-radius:var(--radius);padding:1.5rem 1.5rem 1.3rem;position:relative;
+    box-shadow:6px 6px 0 var(--legalpad);
+  }
+  .doc-mock::before{
+    content:"";position:absolute;left:2.35rem;top:0;bottom:0;width:1px;background:var(--redline);opacity:0.55;
+  }
+  .doc-tag{
+    font-family:'IBM Plex Mono',monospace;font-size:0.66rem;letter-spacing:0.08em;
+    text-transform:uppercase;color:var(--ink-faint);margin-bottom:0.9rem;padding-left:1.2rem;
+  }
+  .doc-body{padding-left:1.2rem;font-family:'Source Serif 4',serif;font-size:1rem;line-height:1.75;color:var(--ink-soft);}
+  .doc-body strong{color:var(--ink);font-weight:600;}
+  .redline-old{
+    color:var(--ink-faint);text-decoration:line-through;text-decoration-color:var(--redline);text-decoration-thickness:1.5px;
+  }
+  .redline-new{
+    color:var(--redline-dark);font-weight:600;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;
+  }
+  .margin-note{
+    margin-top:1.1rem;margin-left:1.2rem;padding:0.7rem 0.85rem;
+    background:var(--legalpad);color:var(--legalpad-ink);
+    font-family:'IBM Plex Mono',monospace;font-size:0.76rem;line-height:1.55;
+    border-radius:var(--radius);
+  }
+
+  /* ---------- SECTIONS SHARED ---------- */
+  section{padding:3.6rem 0;}
+  .section-head{max-width:56ch;margin-bottom:2.4rem;}
+  .section-head h2{font-size:1.7rem;}
+  @media(min-width:640px){.section-head h2{font-size:2.05rem;}}
+  .section-sub{color:var(--ink-soft);margin-top:0.9rem;font-size:1.02rem;}
+  .rule{height:1px;background:var(--rule-blue-soft);border:none;margin:0;}
+
+  /* ---------- PROBLEM STATS ---------- */
+  .stat-grid{display:grid;gap:1.1rem;grid-template-columns:1fr;}
+  @media(min-width:760px){.stat-grid{grid-template-columns:repeat(3,1fr);}}
+  .stat-card{
+    background:var(--paper-card);border:1px solid var(--rule-blue-soft);
+    border-top:3px solid var(--redline);padding:1.5rem;border-radius:var(--radius);
+  }
+  .stat-num{font-family:'Source Serif 4',serif;font-weight:700;font-size:2.2rem;color:var(--ink);}
+  .stat-label{margin-top:0.5rem;color:var(--ink-soft);font-size:0.92rem;line-height:1.5;}
+  .problem-note{
+    margin-top:1.8rem;padding:1.1rem 1.3rem;background:rgba(196,18,48,0.05);
+    border-left:3px solid var(--redline);font-size:0.95rem;color:var(--ink-soft);border-radius:var(--radius);
+  }
+
+  /* ---------- STEPS ---------- */
+  .steps{display:grid;gap:1.3rem;grid-template-columns:1fr;}
+  @media(min-width:760px){.steps{grid-template-columns:repeat(3,1fr);}}
+  .step-card{padding:1.6rem 0 0;border-top:1px solid var(--rule-blue-soft);}
+  .step-tag{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--redline);letter-spacing:0.08em;margin-bottom:0.7rem;}
+  .step-card h3{font-size:1.18rem;margin-bottom:0.55rem;}
+  .step-card p{color:var(--ink-soft);font-size:0.95rem;}
+  .disclaimer-line{
+    margin-top:2rem;font-size:0.84rem;color:var(--ink-faint);font-family:'IBM Plex Mono',monospace;
+    padding-top:1.1rem;border-top:1px dashed var(--rule-blue);
+  }
+
+  /* ---------- PERSONAS ---------- */
+  .persona-grid{display:grid;gap:1rem;grid-template-columns:1fr;}
+  @media(min-width:640px){.persona-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(min-width:1000px){.persona-grid{grid-template-columns:repeat(4,1fr);}}
+  .persona-card{
+    background:var(--paper-card);border:1px solid var(--rule-blue-soft);
+    border-radius:var(--radius);padding:1.3rem;position:relative;
+  }
+  .persona-tab{
+    display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:0.06em;
+    text-transform:uppercase;background:var(--legalpad);color:var(--legalpad-ink);
+    padding:0.2rem 0.5rem;border-radius:2px;margin-bottom:0.85rem;
+  }
+  .persona-card h3{font-size:1.02rem;font-weight:600;margin-bottom:0.5rem;}
+  .persona-card p{font-size:0.88rem;color:var(--ink-soft);}
+
+  /* ---------- PRICING ---------- */
+  .price-grid{display:grid;gap:1.1rem;grid-template-columns:1fr;}
+  @media(min-width:760px){.price-grid{grid-template-columns:repeat(3,1fr);}}
+  .price-card{
+    background:var(--paper-card);border:1px solid var(--rule-blue-soft);border-radius:var(--radius);
+    padding:1.6rem;display:flex;flex-direction:column;
+  }
+  .price-card.featured{border-color:var(--redline);box-shadow:0 0 0 1px var(--redline);}
+  .price-plan{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;letter-spacing:0.05em;text-transform:uppercase;color:var(--ink-faint);}
+  .price-amount{font-family:'Source Serif 4',serif;font-size:2rem;font-weight:700;margin:0.5rem 0 0.2rem;}
+  .price-amount span{font-size:0.95rem;font-weight:400;color:var(--ink-faint);}
+  .price-note{font-size:0.78rem;color:var(--ink-faint);margin-bottom:1rem;}
+  .price-features{list-style:none;padding:0;margin:0 0 1.3rem;font-size:0.9rem;color:var(--ink-soft);}
+  .price-features li{padding:0.4rem 0;border-top:1px solid var(--rule-blue-soft);}
+  .price-features li:first-child{border-top:none;}
+  .price-cta{
+    margin-top:auto;text-align:center;text-decoration:none;
+    background:var(--ink);color:var(--paper);padding:0.7rem;border-radius:var(--radius);font-size:0.88rem;font-weight:600;
+  }
+  .price-card.featured .price-cta{background:var(--redline);}
+  .price-cta:hover{opacity:0.88;}
+  .pricing-flag{
+    font-size:0.85rem;color:var(--ink-soft);margin-top:1.6rem;padding:0.9rem 1.1rem;
+    background:var(--paper-card);border:1px dashed var(--rule-blue);border-radius:var(--radius);
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq-item{border-top:1px solid var(--rule-blue-soft);padding:1.1rem 0;}
+  .faq-item:last-child{border-bottom:1px solid var(--rule-blue-soft);}
+  .faq-item summary{
+    cursor:pointer;font-weight:600;font-size:1.02rem;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  .faq-item summary::-webkit-details-marker{display:none;}
+  .faq-item summary::after{
+    content:"+";font-family:'IBM Plex Mono',monospace;color:var(--redline);font-size:1.1rem;flex-shrink:0;
+  }
+  .faq-item[open] summary::after{content:"–";}
+  .faq-item p{margin-top:0.8rem;color:var(--ink-soft);font-size:0.95rem;max-width:62ch;}
+
+  /* ---------- FINAL CTA ---------- */
+  .final-cta{
+    background:var(--ink);color:var(--paper);border-radius:4px;padding:3rem 1.8rem;text-align:center;
+  }
+  .final-cta h2{color:#fff;font-size:1.8rem;max-width:32ch;margin:0 auto 0.8rem;}
+  @media(min-width:640px){.final-cta h2{font-size:2.1rem;}}
+  .final-cta .section-sub{color:#C7C9D6;max-width:46ch;margin:0 auto 1.8rem;}
+  .final-cta .signup-box{margin:0 auto;text-align:left;background:#1F212C;border-color:#33354A;}
+  .final-cta .field input,.final-cta .field select{background:#171821;border-color:#3A3C52;color:#fff;}
+  .final-cta .pill-btn{background:#171821;border-color:#3A3C52;color:#C7C9D6;}
+  .final-cta .pill-btn.picked{background:#fff;border-color:#fff;color:#17181F;}
+  .final-cta .email-copy-row{background:#171821;border-color:#3A3C52;}
+  .final-cta .email-text{color:#fff;}
+  .final-cta .fine-print{color:#9497AC;}
+
+  footer{padding:2.4rem 0 3rem;}
+  .footer-row{
+    display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:flex-start;
+    font-size:0.82rem;color:var(--ink-faint);padding-top:1.6rem;border-top:1px solid var(--rule-blue-soft);
+  }
+  .footer-row a{text-decoration:underline;}
+
+  /* reveal animation */
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity 0.6s ease,transform 0.6s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none;}
+    html{scroll-behavior:auto;}
+    .spinner{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-row">
+    <a href="#top" class="wordmark">Reg<span class="strike">Watch</span></a>
+    <nav class="nav-links">
+      <a href="#how-it-works">How it works</a>
+      <a href="#who-its-for">Who it's for</a>
+      <a href="#pricing">Early pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a href="#top-signup" class="nav-cta">Join early access</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Early access — building now</p>
+        <h1>Regulations get <em>redlined</em> all the time.<br>Most small businesses find out too late.</h1>
+        <p class="hero-sub">RegWatch is a plain-English alert system we're building for solo operators and small regulated businesses — the people who don't have a compliance department to read the fine print for them. Nothing's live yet. Join early access and help decide what we build first.</p>
+
+        <div class="signup-box" id="top-signup">
+          <p class="pill-label">What best describes your business? (optional)</p>
+          <div class="pill-row">
+            <button type="button" class="pill-btn" data-biz="Financial advisory">Financial advisory</button>
+            <button type="button" class="pill-btn" data-biz="Healthcare or pharmacy">Healthcare / pharmacy</button>
+            <button type="button" class="pill-btn" data-biz="HR or employment services">HR / employment</button>
+            <button type="button" class="pill-btn" data-biz="Contractor or trades">Contractor / trades</button>
+            <button type="button" class="pill-btn" data-biz="Real estate">Real estate</button>
+            <button type="button" class="pill-btn" data-biz="Other">Other</button>
+          </div>
+          <p class="email-capture-label">Email us to join early access</p>
+          <div class="email-copy-row">
+            <span class="email-text">aiosbook@zohomail.com</span>
+            <button type="button" class="copy-btn">Copy</button>
+          </div>
+          <p class="fine-print">No link, no redirect. Copy the address, send a note with what you picked above, and we'll add you personally.</p>
+        </div>
+      </div>
+
+      <div class="doc-mock reveal">
+        <p class="doc-tag">Example alert — illustrative, not a real filing</p>
+        <div class="doc-body">
+          <strong>ABC State Licensing Board — Rule 14.2</strong><br>
+          Annual report deadline: <span class="redline-old">45 days after fiscal year end</span> <span class="redline-new">→ 30 days after fiscal year end</span><br>
+          Effective next quarter.
+        </div>
+        <div class="margin-note">Plain English: you'll need to file two weeks earlier than last year. Put it on the calendar now, not when the reminder is due.</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- PROBLEM -->
+  <section id="why-it-matters">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Why this matters</p>
+        <h2>Compliance software grew into a $20B+ industry. Almost none of it was built for you.</h2>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card reveal">
+          <div class="stat-num">$20B+</div>
+          <div class="stat-label">Size of the regulatory-technology market in 2026 — most forecasts put it growing 15–20% a year from here.</div>
+        </div>
+        <div class="stat-card reveal">
+          <div class="stat-num">$160K+</div>
+          <div class="stat-label">Top penalty for a single willful OSHA violation. Real money for a business with no compliance department to catch it first.</div>
+        </div>
+        <div class="stat-card reveal">
+          <div class="stat-num">280%</div>
+          <div class="stat-label">How much harder one industry analysis found small businesses are hit by the same fine as a large company, relative to revenue.</div>
+        </div>
+      </div>
+      <p class="problem-note reveal">Most regulatory-monitoring tools are priced and built for compliance <em>teams</em> — legal departments, GRC platforms, six-figure annual contracts. If you're running the business yourself, none of that was built with you in the room. That's the gap RegWatch is trying to fill.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- HOW IT WILL WORK -->
+  <section id="how-it-works">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">The plan</p>
+        <h2>Here's what we're building</h2>
+        <p class="section-sub">Three steps, in the order we're building them.</p>
+      </div>
+      <div class="steps">
+        <div class="step-card reveal">
+          <p class="step-tag">STEP 01</p>
+          <h3>Tell us your business</h3>
+          <p>Industry, state, and size. We map the specific rules that actually apply to you — not a generic regulatory firehose.</p>
+        </div>
+        <div class="step-card reveal">
+          <p class="step-tag">STEP 02</p>
+          <h3>We watch, so you don't have to</h3>
+          <p>Agency sites, state boards, and industry bodies, checked continuously and filtered down to your profile only.</p>
+        </div>
+        <div class="step-card reveal">
+          <p class="step-tag">STEP 03</p>
+          <h3>You get plain English, not legalese</h3>
+          <p>What changed, why it matters, and what — if anything — to do about it, with a deadline attached when there is one.</p>
+        </div>
+      </div>
+      <p class="disclaimer-line">RegWatch is being designed as a monitoring aid, not a substitute for legal advice. For anything high-stakes, loop in a licensed professional.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- WHO IT'S FOR -->
+  <section id="who-its-for">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Who we're building this for</p>
+        <h2>If this is you, we want your input</h2>
+        <p class="section-sub">No case studies yet — there's no product yet either. These are the people we're designing around. Tell us where you fit when you join.</p>
+      </div>
+      <div class="persona-grid">
+        <div class="persona-card reveal">
+          <span class="persona-tab">Case 01</span>
+          <h3>Solo financial advisor</h3>
+          <p>Juggles SEC and state rules with no compliance officer down the hall.</p>
+        </div>
+        <div class="persona-card reveal">
+          <span class="persona-tab">Case 02</span>
+          <h3>Independent pharmacist</h3>
+          <p>One missed state board rule can mean a real fine, not a warning letter.</p>
+        </div>
+        <div class="persona-card reveal">
+          <span class="persona-tab">Case 03</span>
+          <h3>Small HR consultancy</h3>
+          <p>Tracks labor law across multiple clients and, often, multiple states at once.</p>
+        </div>
+        <div class="persona-card reveal">
+          <span class="persona-tab">Case 04</span>
+          <h3>Single-location contractor</h3>
+          <p>Licensing and safety rules that change by state, and sometimes by year.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Early-access pricing</p>
+        <h2>What we're planning to charge</h2>
+        <p class="section-sub">Nothing here is final — this is our starting point, and part of why we're asking you to join now instead of waiting until launch.</p>
+      </div>
+      <div class="price-grid">
+        <div class="price-card reveal">
+          <p class="price-plan">Free — while we build</p>
+          <p class="price-amount">$0</p>
+          <p class="price-note">During early access</p>
+          <ul class="price-features">
+            <li>1 jurisdiction</li>
+            <li>Monthly digest</li>
+            <li>Early-access community</li>
+          </ul>
+          <a href="#top-signup" class="price-cta">Join early access</a>
+        </div>
+        <div class="price-card featured reveal">
+          <p class="price-plan">Starter (planned)</p>
+          <p class="price-amount">$39<span>/mo</span></p>
+          <p class="price-note">Planned launch price, not final</p>
+          <ul class="price-features">
+            <li>Up to 3 jurisdictions</li>
+            <li>Real-time alerts</li>
+            <li>Deadline tracking</li>
+          </ul>
+          <a href="#top-signup" class="price-cta">Join early access</a>
+        </div>
+        <div class="price-card reveal">
+          <p class="price-plan">Pro (planned)</p>
+          <p class="price-amount">$79<span>/mo</span></p>
+          <p class="price-note">Planned launch price, not final</p>
+          <ul class="price-features">
+            <li>Multiple business profiles</li>
+            <li>Priority alert delivery</li>
+            <li>Compliance history log</li>
+          </ul>
+          <a href="#top-signup" class="price-cta">Join early access</a>
+        </div>
+      </div>
+      <p class="pricing-flag reveal">Tell us what feels fair when you join — pricing on a page like this is a guess until real people weigh in.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Questions</p>
+        <h2>Before you join</h2>
+      </div>
+      <div>
+        <details class="faq-item reveal">
+          <summary>Is RegWatch live yet?</summary>
+          <p>No — we're validating the idea and figuring out what to build first. Joining early access puts you first in line and lets you help shape it.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary>How is this different from just reading agency newsletters myself?</summary>
+          <p>Mostly speed and filtering. The plan is to watch sources continuously and only surface what applies to your specific profile, in plain English, instead of you scanning a general feed for the one item that matters.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary>Will RegWatch replace my compliance lawyer?</summary>
+          <p>No. It's being designed as a monitoring aid that tells you when something changed and points you in the right direction — not as legal advice. For anything high-stakes, you'll still want a licensed professional.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary>Is my information private?</summary>
+          <p>We'll only use your email to share updates about RegWatch as we build it. You can unsubscribe at any point.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary>What if my industry isn't listed above?</summary>
+          <p>Tell us anyway when you join. That's genuinely useful — it helps us prioritize what gets built first.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section>
+    <div class="wrap">
+      <div class="final-cta reveal">
+        <h2>Help us build the compliance tool solo operators actually need</h2>
+        <p class="section-sub">Two-minute signup. You'll hear from us as this gets built, not before.</p>
+        <div class="signup-box">
+          <p class="pill-label">What best describes your business? (optional)</p>
+          <div class="pill-row">
+            <button type="button" class="pill-btn" data-biz="Financial advisory">Financial advisory</button>
+            <button type="button" class="pill-btn" data-biz="Healthcare or pharmacy">Healthcare / pharmacy</button>
+            <button type="button" class="pill-btn" data-biz="HR or employment services">HR / employment</button>
+            <button type="button" class="pill-btn" data-biz="Contractor or trades">Contractor / trades</button>
+            <button type="button" class="pill-btn" data-biz="Real estate">Real estate</button>
+            <button type="button" class="pill-btn" data-biz="Other">Other</button>
+          </div>
+          <p class="email-capture-label">Email us to join early access</p>
+          <div class="email-copy-row">
+            <span class="email-text">aiosbook@zohomail.com</span>
+            <button type="button" class="copy-btn">Copy</button>
+          </div>
+          <p class="fine-print">No link, no redirect. Copy the address, send a note with what you picked above, and we'll add you personally.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div class="footer-row">
+        <span>RegWatch is an early-access concept, not a live product yet. Not legal advice.</span>
+        <span id="footer-year-holder">© 2026 RegWatch</span>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  function flashCopied(btn){
+    var original = btn.textContent;
+    btn.textContent = "Copied ✓";
+    btn.classList.add("copied");
+    setTimeout(function(){
+      btn.textContent = original;
+      btn.classList.remove("copied");
+    }, 2000);
+  }
+
+  async function copyEmail(btn){
+    var email = "aiosbook@zohomail.com";
+    try{
+      await navigator.clipboard.writeText(email);
+      flashCopied(btn);
+      return;
+    }catch(e){ /* clipboard API unavailable or blocked, fall through */ }
+    try{
+      var temp = document.createElement("textarea");
+      temp.value = email;
+      temp.style.position = "fixed";
+      temp.style.opacity = "0";
+      document.body.appendChild(temp);
+      temp.focus();
+      temp.select();
+      document.execCommand("copy");
+      document.body.removeChild(temp);
+      flashCopied(btn);
+    }catch(e2){
+      btn.textContent = "Select text above";
+    }
+  }
+
+  document.querySelectorAll(".copy-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){ copyEmail(this); });
+  });
+
+  var pickedBiz = null;
+  document.querySelectorAll(".pill-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var biz = this.dataset.biz;
+      pickedBiz = biz;
+      document.querySelectorAll(".pill-btn").forEach(function(b){
+        b.classList.toggle("picked", b.dataset.biz === biz);
+      });
+    });
+  });
+
+  document.getElementById("footer-year-holder").textContent = "© " + new Date().getFullYear() + " RegWatch";
+
+  if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add("in");
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".reveal").forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll(".reveal").forEach(function(el){ el.classList.add("in"); });
+  }
+})();
+</script>
+
+</body>
+</html>
